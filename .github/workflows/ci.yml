@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  all:
+    name: Build & Test
+    runs-on: ubuntu-20.04
+    env:
+      MIX_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.16.2"
+          otp-version: "26.2.5"
+
+      - name: "Install Elixir dependencies"
+        run: mix deps.get
+
+      - name: "Check formatting"
+        run: mix format --check-formatted
+
+      - name: "Compile"
+        run: mix compile --warnings-as-errors --verbose
+
+      - name: "Static analysis"
+        run: mix credo --strict
+
+      - name: "Run tests"
+        run: mix test

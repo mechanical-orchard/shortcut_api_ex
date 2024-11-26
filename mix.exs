@@ -24,7 +24,8 @@ defmodule ShortcutApiEx.MixProject do
       {:req, "~> 0.3.0"},
       {:jason, "~> 1.4"},
       {:bypass, "~> 2.1", only: :test},
-      {:plug_cowboy, "~> 2.5", only: :test}
+      {:plug_cowboy, "~> 2.5", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 end
