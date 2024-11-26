@@ -1,6 +1,6 @@
 # ShortcutApiEx
 
-Elixir client for the Shortcut API.
+Elixir client for the [Shortcut](https://www.shortcut.com/) API.
 
 [API Docs](https://developer.shortcut.com/api/rest/v3)
 
