@@ -25,7 +25,6 @@ defmodule ShortcutApiEx.MixProject do
       main: "readme",
       extras: [
         "README.md": [title: "Read Me"],
-        # basics...
         "man/basics/getting-started.md": [filename: "basics-getting-started"]
       ],
       groups_for_modules: [
