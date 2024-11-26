@@ -7,6 +7,23 @@ on:
       - main
 
 jobs:
+  version:
+    name: Calculate version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versioning.outputs.version-string }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Calculate semantic version
+        id: versioning
+        uses: bitshifted/git-auto-semver@v1.1.0
+        with:
+          main_branch: main
+          create_tag: true
+          tag_prefix: 'v'
   test:
     name: Build and test
     runs-on: ubuntu-latest
@@ -46,8 +63,8 @@ jobs:
 
   publish:
     name: Publish to Hex.pm
-    needs: test
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, version]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     
     steps:
