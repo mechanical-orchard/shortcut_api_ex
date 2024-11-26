@@ -42,12 +42,18 @@ jobs:
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
         run: |
+          # Checkout the repository
+          git checkout ${{ github.ref }}
+
+          # Configure Git user
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          sed -i '' 's/version: ".*"/version: "'${RELEASE_VERSION#v}'"/g' mix.exs mix.exs
+
+          # Update version in mix.exs
+          sed -i 's/version: ".*"/version: "'${RELEASE_VERSION#v}'"/g' mix.exs
           git add mix.exs
           git commit -m "chore: Bump version to ${RELEASE_VERSION}"
-          git push
+          git push origin ${{ github.ref }}
 
       - name: Create GitHub Release
         env:
