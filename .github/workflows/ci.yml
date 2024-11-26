@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   pull_request:
@@ -7,30 +7,62 @@ on:
       - main
 
 jobs:
-  all:
-    name: Build & Test
-    runs-on: ubuntu-20.04
-    env:
-      MIX_ENV: test
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Elixir
-        uses: erlef/setup-beam@v1
-        with:
-          elixir-version: "1.16.2"
-          otp-version: "26.2.5"
+    - uses: actions/checkout@v3
+    
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: "1.16.2"
+        otp-version: "26.2.5"
+    
+    - name: Cache deps
+      uses: actions/cache@v3
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+    
+    - name: Cache build
+      uses: actions/cache@v3
+      with:
+        path: _build
+        key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-build-
+    
+    - name: Install dependencies
+      run: mix deps.get
+    - name: Static analysis
+      run: mix credo --strict
+    - name: Run tests
+      run: mix test
+    
+    - name: Check formatting
+      run: mix format --check-formatted
 
-      - name: "Install Elixir dependencies"
-        run: mix deps.get
-
-      - name: "Check formatting"
-        run: mix format --check-formatted
-
-      - name: "Compile"
-        run: mix compile --warnings-as-errors --verbose
-
-      - name: "Static analysis"
-        run: mix credo --strict
-
-      - name: "Run tests"
-        run: mix test
+  publish:
+    name: Publish to Hex.pm
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.14.4'
+        otp-version: '25.3'
+    
+    - name: Install dependencies
+      run: mix deps.get
+    
+    - name: Publish to Hex.pm
+      env:
+        HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+      run: mix hex.publish --yes

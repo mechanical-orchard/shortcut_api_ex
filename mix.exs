@@ -10,7 +10,10 @@ defmodule ShortcutApiEx.MixProject do
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      docs: &docs/0
+      docs: &docs/0,
+      description: "Elixir client for the Shortcut API",
+      package: package(),
+      source_url: @source_url
     ]
   end
 
@@ -51,6 +54,17 @@ defmodule ShortcutApiEx.MixProject do
       {:plug_cowboy, "~> 2.5", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      name: "shortcut_api_ex",
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @source_url,
+        "Shortcut API Docs" => "https://developer.shortcut.com/api/rest/v3"
+      }
     ]
   end
 end
