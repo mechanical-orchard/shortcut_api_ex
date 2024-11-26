@@ -3,6 +3,7 @@ defmodule ShortcutApi.Epics do
 
   @moduledoc """
   API wrapper for Shortcut Epics endpoints.
+  See: https://developer.shortcut.com/api/rest/v3#Epics
 
   All functions require a valid Shortcut API token.
   """

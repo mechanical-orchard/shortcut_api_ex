@@ -3,6 +3,7 @@ defmodule ShortcutApi.Projects do
 
   @moduledoc """
   API wrapper for Shortcut Projects endpoints.
+  See: https://developer.shortcut.com/api/rest/v3#Projects
 
   All functions require a valid Shortcut API token.
   """

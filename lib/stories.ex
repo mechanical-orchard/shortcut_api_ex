@@ -3,6 +3,7 @@ defmodule ShortcutApi.Stories do
 
   @moduledoc """
   API wrapper for Shortcut Stories endpoints.
+  See: https://developer.shortcut.com/api/rest/v3#Stories
 
   All functions require a valid Shortcut API token.
   """
