@@ -4,7 +4,6 @@ Elixir client for the [Shortcut](https://www.shortcut.com/) API.
 
 [API Docs](https://developer.shortcut.com/api/rest/v3)
 
-
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
