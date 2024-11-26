@@ -36,7 +36,7 @@ jobs:
         with:
           main_branch: main
           create_tag: false
-          tag_prefix: 'v'
+          tag_prefix: "v"
 
       - name: Update version in mix.exs
         env:
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          sed -i "s/version: \".*\"/version: \"${RELEASE_VERSION#v}\"/" mix.exs
+          sed -i '' 's/version: ".*"/version: "'${RELEASE_VERSION#v}'"/g' mix.exs mix.exs
           git add mix.exs
           git commit -m "chore: Bump version to ${RELEASE_VERSION}"
           git push

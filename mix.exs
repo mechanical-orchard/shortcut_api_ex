@@ -6,7 +6,7 @@ defmodule ShortcutApiEx.MixProject do
   def project do
     [
       app: :shortcut_api_ex,
-      version: version(),
+      version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -54,14 +54,6 @@ defmodule ShortcutApiEx.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
-  end
-
-  # Get version from git tags or default to 0.1.0
-  defp version do
-    case System.get_env("RELEASE_VERSION") do
-      nil -> "0.1.0"
-      v -> String.replace_prefix(v, "v", "")
-    end
   end
 
   defp package do
