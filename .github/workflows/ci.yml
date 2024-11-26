@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   pull_request:
@@ -7,23 +7,6 @@ on:
       - main
 
 jobs:
-  version:
-    name: Calculate version
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.versioning.outputs.version-string }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: Calculate semantic version
-        id: versioning
-        uses: bitshifted/git-auto-semver@v1.1.0
-        with:
-          main_branch: main
-          create_tag: true
-          tag_prefix: 'v'
   test:
     name: Build and test
     runs-on: ubuntu-latest
@@ -57,29 +40,6 @@ jobs:
       run: mix credo --strict
     - name: Run tests
       run: mix test
-    
     - name: Check formatting
       run: mix format --check-formatted
 
-  publish:
-    name: Publish to Hex.pm
-    needs: [test, version]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: '1.14.4'
-        otp-version: '25.3'
-    
-    - name: Install dependencies
-      run: mix deps.get
-    
-    - name: Publish to Hex.pm
-      env:
-        HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
-      run: mix hex.publish --yes
