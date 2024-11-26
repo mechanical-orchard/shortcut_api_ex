@@ -117,4 +117,50 @@ defmodule ShortcutApi.EpicsTest do
     assert length(workflow["states"]) == 3
     assert Enum.at(workflow["states"], 1)["name"] == "In Progress"
   end
+
+  test "get_epic_stats/2", %{bypass: bypass} do
+    epic_id = 123
+
+    Bypass.expect(bypass, "GET", "/api/v3/epics/#{epic_id}/stats", fn conn ->
+      conn
+      |> Plug.Conn.put_resp_content_type("application/json")
+      |> Plug.Conn.resp(
+        200,
+        Jason.encode!(%{
+          num_points: 10,
+          num_stories: 5,
+          num_stories_unstarted: 2,
+          num_stories_started: 2,
+          num_stories_done: 1
+        })
+      )
+    end)
+
+    {:ok, stats} = ShortcutApi.Epics.get_epic_stats("fake-token", epic_id)
+    assert stats["num_points"] == 10
+    assert stats["num_stories"] == 5
+  end
+
+  test "get_epic_state/2", %{bypass: bypass} do
+    state_id = 123
+
+    Bypass.expect(bypass, "GET", "/api/v3/epic-workflow/states/#{state_id}", fn conn ->
+      conn
+      |> Plug.Conn.put_resp_content_type("application/json")
+      |> Plug.Conn.resp(
+        200,
+        Jason.encode!(%{
+          id: state_id,
+          name: "In Progress",
+          type: "started",
+          position: 2
+        })
+      )
+    end)
+
+    {:ok, state} = ShortcutApi.Epics.get_epic_state("fake-token", state_id)
+    assert state["id"] == state_id
+    assert state["name"] == "In Progress"
+    assert state["type"] == "started"
+  end
 end

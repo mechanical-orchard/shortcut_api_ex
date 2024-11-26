@@ -128,4 +128,42 @@ defmodule ShortcutApi.Epics do
   def get_epic_workflow(token) when is_binary(token) do
     make_request(:get, "/epic-workflow", token)
   end
+
+  @doc """
+  Get statistics for a specific epic.
+
+  ## Parameters
+    * `token` - Shortcut API token
+    * `epic_id` - The ID of the epic to get stats for
+
+  ## Examples
+
+      iex> ShortcutApi.Epics.get_epic_stats("token", 12345)
+      {:ok, %{num_points: 10, num_stories: 5, ...}}
+
+  """
+  @spec get_epic_stats(token(), epic_id()) :: response()
+  def get_epic_stats(token, epic_id)
+      when is_binary(token) and is_integer(epic_id) and epic_id > 0 do
+    make_request(:get, "/epics/#{epic_id}/stats", token)
+  end
+
+  @doc """
+  Get details about a specific epic state.
+
+  ## Parameters
+    * `token` - Shortcut API token
+    * `state_id` - The ID of the epic state to retrieve
+
+  ## Examples
+
+      iex> ShortcutApi.Epics.get_epic_state("token", 12345)
+      {:ok, %{id: 12345, name: "In Progress", ...}}
+
+  """
+  @spec get_epic_state(token(), pos_integer()) :: response()
+  def get_epic_state(token, state_id)
+      when is_binary(token) and is_integer(state_id) and state_id > 0 do
+    make_request(:get, "/epic-workflow/states/#{state_id}", token)
+  end
 end
