@@ -14,7 +14,7 @@ by adding `shortcut_api_ex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:shortcut_api_ex, "~> 0.1.0"}
+    {:shortcut_api_ex, "~> 1.0.0"}
   ]
 end
 ```
