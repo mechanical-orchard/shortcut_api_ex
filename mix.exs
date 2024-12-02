@@ -6,7 +6,7 @@ defmodule ShortcutApiEx.MixProject do
   def project do
     [
       app: :shortcut_api_ex,
-      version: "0.1.0",
+      version: "",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
