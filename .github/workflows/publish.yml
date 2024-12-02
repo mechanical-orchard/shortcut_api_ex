@@ -42,7 +42,7 @@ jobs:
 
       - name: Update version in mix.exs
         env:
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
         run: |
           # Checkout the repository
           git checkout ${{ github.ref }}
