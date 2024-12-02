@@ -62,8 +62,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${{ steps.version.outputs.version }}
+          git checkout ${{ github.ref }}
           git tag $VERSION
           git push origin $VERSION
+
           gh release create $VERSION \
             --title "Release $VERSION" \
             --generate-notes
