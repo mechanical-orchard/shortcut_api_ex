@@ -33,6 +33,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Get calculated version
         id: version
@@ -53,7 +55,7 @@ jobs:
           sed -i 's/version: ".*"/version: "'${RELEASE_VERSION#v}'"/g' mix.exs
           git add mix.exs
           git commit -m "chore: Bump version to ${RELEASE_VERSION}"
-          git push origin ${{ github.ref }}
+          git push origin HEAD:${{ github.ref }}
 
       - name: Create GitHub Release
         env:
