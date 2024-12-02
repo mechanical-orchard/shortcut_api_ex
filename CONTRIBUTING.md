@@ -1,3 +1,8 @@
+# Contributing
+
+## Use of aider for assistance
+
+We use aider to help facilitate making new modules here. It uses conventional commits, which our auto semantic versioning in CI pairs with nicely.
 
 ## Publishing a new commit
 
