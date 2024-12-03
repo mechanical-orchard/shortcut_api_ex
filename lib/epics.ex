@@ -171,6 +171,16 @@ defmodule ShortcutApi.Epics do
 end
 
 defmodule ShortcutApi.EpicsBehavior do
+  @moduledoc """
+  A behaviour for interacting with Shortcut Epics API endpoints.
+
+  This module defines the required callbacks for operations related to epics,
+  including retrieving, creating, updating, deleting, and managing epic states
+  and statistics. Implementations of this behaviour must provide the necessary
+  logic to handle interactions with the Shortcut API.
+
+  All callbacks require a valid Shortcut API token.
+  """
   @callback get_epic(token :: String.t(), epic_id :: pos_integer()) ::
               {:ok, map()} | {:error, any()}
   @callback create_epic(token :: String.t(), params :: map()) :: {:ok, map()} | {:error, any()}

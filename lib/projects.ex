@@ -115,6 +115,10 @@ defmodule ShortcutApi.Projects do
 end
 
 defmodule ShortcutApi.ProjectsBehavior do
+  @moduledoc """
+    The Projects behaviour.
+  """
+
   @callback list_projects(String.t()) :: {:ok, map() | list(map())} | {:error, any()}
   @callback get_project(String.t(), pos_integer()) :: {:ok, map()} | {:error, any()}
   @callback create_project(String.t(), map()) :: {:ok, map()} | {:error, any()}
