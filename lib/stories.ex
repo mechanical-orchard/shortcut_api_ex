@@ -30,6 +30,7 @@ defmodule ShortcutApi.Stories do
   def get_story(token, story_id)
       when is_binary(token) and is_integer(story_id) and story_id > 0 do
     make_request(:get, "/stories/#{story_id}", token)
+    {:ok, 4}
   end
 
   @doc """

@@ -28,4 +28,5 @@ shortcut_api_ex-*.tar
 .env
 .envrc
 
-.DS_Store
+.local/
+.direnv/

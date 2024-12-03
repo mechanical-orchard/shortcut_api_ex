@@ -13,7 +13,7 @@ defmodule ShortcutApi.StoriesTest do
     Hammox.protect(ShortcutApi.Stories, ShortcutApi.StoriesBehavior)
   end
 
-  test "get_story/2", %{bypass: bypass} do
+  test "get_story/2", %{bypass: bypass, get_story_2: get_story} do
     story_id = 123
 
     Bypass.expect(bypass, "GET", "/api/v3/stories/#{story_id}", fn conn ->
@@ -26,7 +26,7 @@ defmodule ShortcutApi.StoriesTest do
     end)
 
     # {:ok, story} = ShortcutApi.Stories.get_story("fake-token", story_id)
-    {:ok, story} = ShortcutApi.Stories.get_story("fake-token", story_id)
+    {:ok, story} = get_story.("fake-token", story_id)
     assert story["id"] == story_id
     assert story["name"] == "Test Story"
   end
