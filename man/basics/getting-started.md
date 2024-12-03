@@ -20,5 +20,5 @@ You can use the `ShortcutApiEx.Epics.list_epics/1` function to fetch a list of e
 elixir
 ```
 token = "your_shortcut_api_token"
-{:ok, epics} = ShortcutApiEx.Epics.list_epics(token)
+{:ok, epics} = ShortcutApi.Epics.list_epics(token)
 ```
