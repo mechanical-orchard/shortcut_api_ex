@@ -9,7 +9,11 @@ defmodule ShortcutApi.StoriesTest do
     {:ok, bypass: bypass}
   end
 
-  test "get_story/2", %{bypass: bypass} do
+  setup_all do
+    Hammox.protect(ShortcutApi.Stories, ShortcutApi.StoriesBehavior)
+  end
+
+  test "get_story/2", %{bypass: bypass, get_story_2: get_story} do
     story_id = 123
 
     Bypass.expect(bypass, "GET", "/api/v3/stories/#{story_id}", fn conn ->
@@ -21,13 +25,12 @@ defmodule ShortcutApi.StoriesTest do
       )
     end)
 
-    {:ok, story} = ShortcutApi.Stories.get_story("fake-token", story_id)
+    {:ok, story} = get_story.("fake-token", story_id)
     assert story["id"] == story_id
     assert story["name"] == "Test Story"
   end
 
-  test "create_story/2", %{bypass: bypass} do
-    # Change to use string keys
+  test "create_story/2", %{bypass: bypass, create_story_2: create_story} do
     story_params = %{"name" => "New Story", "project_id" => 789}
 
     Bypass.expect(bypass, "POST", "/api/v3/stories", fn conn ->
@@ -41,12 +44,12 @@ defmodule ShortcutApi.StoriesTest do
       |> Plug.Conn.resp(201, Jason.encode!(response))
     end)
 
-    {:ok, story} = ShortcutApi.Stories.create_story("fake-token", story_params)
+    {:ok, story} = create_story.("fake-token", story_params)
     assert story["name"] == "New Story"
     assert story["project_id"] == 789
   end
 
-  test "update_story/3", %{bypass: bypass} do
+  test "update_story/3", %{bypass: bypass, update_story_3: update_story} do
     story_id = 123
     update_params = %{"name" => "Updated Story"}
 
@@ -62,12 +65,12 @@ defmodule ShortcutApi.StoriesTest do
       )
     end)
 
-    {:ok, story} = ShortcutApi.Stories.update_story("fake-token", story_id, update_params)
+    {:ok, story} = update_story.("fake-token", story_id, update_params)
     assert story["id"] == story_id
     assert story["name"] == "Updated Story"
   end
 
-  test "delete_story/2", %{bypass: bypass} do
+  test "delete_story/2", %{bypass: bypass, delete_story_2: delete_story} do
     story_id = 123
 
     Bypass.expect(bypass, "DELETE", "/api/v3/stories/#{story_id}", fn conn ->
@@ -76,6 +79,6 @@ defmodule ShortcutApi.StoriesTest do
       |> Plug.Conn.resp(200, Jason.encode!(%{}))
     end)
 
-    assert {:ok, %{}} = ShortcutApi.Stories.delete_story("fake-token", story_id)
+    assert {:ok, %{}} = delete_story.("fake-token", story_id)
   end
 end

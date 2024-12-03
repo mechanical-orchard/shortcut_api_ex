@@ -47,12 +47,13 @@ defmodule ShortcutApiEx.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:req, "~> 0.5.0"},
-      {:jason, "~> 1.4"},
       {:bypass, "~> 2.1", only: :test},
-      {:plug_cowboy, "~> 2.5", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:hammox, "~> 0.7", only: :test},
+      {:jason, "~> 1.4"},
+      {:plug_cowboy, "~> 2.5", only: :test},
+      {:req, "~> 0.5.0"}
     ]
   end
 
