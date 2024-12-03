@@ -9,6 +9,10 @@ defmodule ShortcutApi.EpicsTest do
     {:ok, bypass: bypass}
   end
 
+  setup_all do
+    Hammox.protect(ShortcutApi.Epics, ShortcutApi.EpicsBehavior)
+  end
+
   test "get_epic/2", %{bypass: bypass} do
     epic_id = 123
 

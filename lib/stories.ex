@@ -1,4 +1,5 @@
 defmodule ShortcutApi.Stories do
+  @behaviour ShortcutApi.StoriesBehavior
   import ShortcutApi.ApiHelpers
 
   @moduledoc """
@@ -95,4 +96,37 @@ defmodule ShortcutApi.Stories do
       when is_binary(token) and is_integer(story_id) and story_id > 0 do
     make_request(:delete, "/stories/#{story_id}", token)
   end
+end
+
+defmodule ShortcutApi.StoriesBehavior do
+  @moduledoc """
+  Behavior for Shortcut API Stories operations.
+
+  This module defines the callbacks required for interacting with
+  Shortcut Stories API endpoints. Implementations of this behavior
+  should provide the logic for each function to handle API requests
+  according to the Shortcut API documentation.
+
+  Each function requires a valid Shortcut API token and operates on
+  story data, facilitating creating, retrieving, updating, and
+  deleting stories.
+
+  ## Callbacks
+
+  * `get_story/2`: Retrieves a single story by its ID.
+  * `create_story/2`: Creates a new story with the provided parameters.
+  * `update_story/3`: Updates an existing story identified by its ID.
+  * `delete_story/2`: Deletes a story by its ID.
+  """
+  @callback get_story(token :: String.t(), story_id :: pos_integer()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback create_story(token :: String.t(), params :: map()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback update_story(token :: String.t(), story_id :: pos_integer(), params :: map()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback delete_story(token :: String.t(), story_id :: pos_integer()) ::
+              {:ok, map() | list(map())} | {:error, any()}
 end

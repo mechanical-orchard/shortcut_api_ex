@@ -1,6 +1,7 @@
 defmodule ShortcutApi.Epics do
   import ShortcutApi.ApiHelpers
 
+  @behaviour ShortcutApi.EpicsBehavior
   @moduledoc """
   API wrapper for Shortcut Epics endpoints.
   See: https://developer.shortcut.com/api/rest/v3#Epics
@@ -167,4 +168,30 @@ defmodule ShortcutApi.Epics do
       when is_binary(token) and is_integer(state_id) and state_id > 0 do
     make_request(:get, "/epic-workflow/states/#{state_id}", token)
   end
+end
+
+defmodule ShortcutApi.EpicsBehavior do
+  @moduledoc """
+  A behaviour for interacting with Shortcut Epics API endpoints.
+
+  This module defines the required callbacks for operations related to epics,
+  including retrieving, creating, updating, deleting, and managing epic states
+  and statistics. Implementations of this behaviour must provide the necessary
+  logic to handle interactions with the Shortcut API.
+
+  All callbacks require a valid Shortcut API token.
+  """
+  @callback get_epic(token :: String.t(), epic_id :: pos_integer()) ::
+              {:ok, map()} | {:error, any()}
+  @callback create_epic(token :: String.t(), params :: map()) :: {:ok, map()} | {:error, any()}
+  @callback update_epic(token :: String.t(), epic_id :: pos_integer(), params :: map()) ::
+              {:ok, map()} | {:error, any()}
+  @callback delete_epic(token :: String.t(), epic_id :: pos_integer()) ::
+              {:ok, map()} | {:error, any()}
+  @callback list_epics(token :: String.t()) :: {:ok, list(map())} | {:error, any()}
+  @callback get_epic_workflow(token :: String.t()) :: {:ok, map()} | {:error, any()}
+  @callback get_epic_stats(token :: String.t(), epic_id :: pos_integer()) ::
+              {:ok, map()} | {:error, any()}
+  @callback get_epic_state(token :: String.t(), state_id :: pos_integer()) ::
+              {:ok, map()} | {:error, any()}
 end
