@@ -9,6 +9,10 @@ defmodule ShortcutApi.ProjectsTest do
     {:ok, bypass: bypass}
   end
 
+  setup_all do
+    Hammox.protect(ShortcutApi.Projects, ShortcutApi.ProjectsBehavior)
+  end
+
   test "list_projects/1", %{bypass: bypass} do
     Bypass.expect(bypass, "GET", "/api/v3/projects", fn conn ->
       conn

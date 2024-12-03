@@ -1,4 +1,5 @@
 defmodule ShortcutApi.Stories do
+  @behaviour ShortcutApi.StoriesBehavior
   import ShortcutApi.ApiHelpers
 
   @moduledoc """
@@ -95,4 +96,18 @@ defmodule ShortcutApi.Stories do
       when is_binary(token) and is_integer(story_id) and story_id > 0 do
     make_request(:delete, "/stories/#{story_id}", token)
   end
+end
+
+defmodule ShortcutApi.StoriesBehavior do
+  @callback get_story(token :: String.t(), story_id :: pos_integer()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback create_story(token :: String.t(), params :: map()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback update_story(token :: String.t(), story_id :: pos_integer(), params :: map()) ::
+              {:ok, map() | list(map())} | {:error, any()}
+
+  @callback delete_story(token :: String.t(), story_id :: pos_integer()) ::
+              {:ok, map() | list(map())} | {:error, any()}
 end

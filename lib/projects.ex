@@ -1,6 +1,7 @@
 defmodule ShortcutApi.Projects do
   import ShortcutApi.ApiHelpers
 
+  @behaviour ShortcutApi.ProjectsBehavior
   @moduledoc """
   API wrapper for Shortcut Projects endpoints.
   See: https://developer.shortcut.com/api/rest/v3#Projects
@@ -111,4 +112,12 @@ defmodule ShortcutApi.Projects do
       when is_binary(token) and is_integer(project_id) and project_id > 0 do
     make_request(:delete, "/projects/#{project_id}", token)
   end
+end
+
+defmodule ShortcutApi.ProjectsBehavior do
+  @callback list_projects(String.t()) :: {:ok, map() | list(map())} | {:error, any()}
+  @callback get_project(String.t(), pos_integer()) :: {:ok, map()} | {:error, any()}
+  @callback create_project(String.t(), map()) :: {:ok, map()} | {:error, any()}
+  @callback update_project(String.t(), pos_integer(), map()) :: {:ok, map()} | {:error, any()}
+  @callback delete_project(String.t(), pos_integer()) :: {:ok, map()} | {:error, any()}
 end

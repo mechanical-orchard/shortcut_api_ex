@@ -1,5 +1,5 @@
 defmodule ShortcutApi.StoriesTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   setup do
     bypass = Bypass.open()
@@ -7,6 +7,10 @@ defmodule ShortcutApi.StoriesTest do
     base_url = "http://localhost:#{bypass.port}/api/v3"
     Application.put_env(:shortcut_api, :base_url, base_url)
     {:ok, bypass: bypass}
+  end
+
+  setup_all do
+    Hammox.protect(ShortcutApi.Stories, ShortcutApi.StoriesBehavior)
   end
 
   test "get_story/2", %{bypass: bypass} do
@@ -21,6 +25,7 @@ defmodule ShortcutApi.StoriesTest do
       )
     end)
 
+    # {:ok, story} = ShortcutApi.Stories.get_story("fake-token", story_id)
     {:ok, story} = ShortcutApi.Stories.get_story("fake-token", story_id)
     assert story["id"] == story_id
     assert story["name"] == "Test Story"
