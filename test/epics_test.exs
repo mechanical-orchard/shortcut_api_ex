@@ -9,7 +9,11 @@ defmodule ShortcutApi.EpicsTest do
     {:ok, bypass: bypass}
   end
 
-  test "get_epic/2", %{bypass: bypass} do
+  setup_all do
+    Hammox.protect(ShortcutApi.Epics, ShortcutApi.EpicsBehavior)
+  end
+
+  test "get_epic/2", %{bypass: bypass, get_epic_2: get_epic} do
     epic_id = 123
 
     Bypass.expect(bypass, "GET", "/api/v3/epics/#{epic_id}", fn conn ->
@@ -21,12 +25,12 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, epic} = ShortcutApi.Epics.get_epic("fake-token", epic_id)
+    {:ok, epic} = get_epic.("fake-token", epic_id)
     assert epic["id"] == epic_id
     assert epic["name"] == "Test Epic"
   end
 
-  test "create_epic/2", %{bypass: bypass} do
+  test "create_epic/2", %{bypass: bypass, create_epic_2: create_epic} do
     epic_params = %{"name" => "New Epic", "workflow_state_id" => 789}
 
     Bypass.expect(bypass, "POST", "/api/v3/epics", fn conn ->
@@ -40,12 +44,12 @@ defmodule ShortcutApi.EpicsTest do
       |> Plug.Conn.resp(201, Jason.encode!(response))
     end)
 
-    {:ok, epic} = ShortcutApi.Epics.create_epic("fake-token", epic_params)
+    {:ok, epic} = create_epic.("fake-token", epic_params)
     assert epic["name"] == "New Epic"
     assert epic["workflow_state_id"] == 789
   end
 
-  test "update_epic/3", %{bypass: bypass} do
+  test "update_epic/3", %{bypass: bypass, update_epic_3: update_epic} do
     epic_id = 123
     update_params = %{"name" => "Updated Epic"}
 
@@ -61,12 +65,12 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, epic} = ShortcutApi.Epics.update_epic("fake-token", epic_id, update_params)
+    {:ok, epic} = update_epic.("fake-token", epic_id, update_params)
     assert epic["id"] == epic_id
     assert epic["name"] == "Updated Epic"
   end
 
-  test "delete_epic/2", %{bypass: bypass} do
+  test "delete_epic/2", %{bypass: bypass, delete_epic_2: delete_epic} do
     epic_id = 123
 
     Bypass.expect(bypass, "DELETE", "/api/v3/epics/#{epic_id}", fn conn ->
@@ -75,10 +79,10 @@ defmodule ShortcutApi.EpicsTest do
       |> Plug.Conn.resp(200, Jason.encode!(%{}))
     end)
 
-    assert {:ok, %{}} = ShortcutApi.Epics.delete_epic("fake-token", epic_id)
+    assert {:ok, %{}} = delete_epic.("fake-token", epic_id)
   end
 
-  test "list_epics/1", %{bypass: bypass} do
+  test "list_epics/1", %{bypass: bypass, list_epics_1: list_epics} do
     Bypass.expect(bypass, "GET", "/api/v3/epics", fn conn ->
       conn
       |> Plug.Conn.put_resp_content_type("application/json")
@@ -91,13 +95,13 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, epics} = ShortcutApi.Epics.list_epics("fake-token")
+    {:ok, epics} = list_epics.("fake-token")
     assert length(epics) == 2
     assert Enum.at(epics, 0)["name"] == "Epic 1"
     assert Enum.at(epics, 1)["name"] == "Epic 2"
   end
 
-  test "get_epic_workflow/1", %{bypass: bypass} do
+  test "get_epic_workflow/1", %{bypass: bypass, get_epic_workflow_1: get_epic_workflow} do
     Bypass.expect(bypass, "GET", "/api/v3/epic-workflow", fn conn ->
       conn
       |> Plug.Conn.put_resp_content_type("application/json")
@@ -113,12 +117,12 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, workflow} = ShortcutApi.Epics.get_epic_workflow("fake-token")
+    {:ok, workflow} = get_epic_workflow.("fake-token")
     assert length(workflow["states"]) == 3
     assert Enum.at(workflow["states"], 1)["name"] == "In Progress"
   end
 
-  test "get_epic_stats/2", %{bypass: bypass} do
+  test "get_epic_stats/2", %{bypass: bypass, get_epic_stats_2: get_epic_stats} do
     epic_id = 123
 
     Bypass.expect(bypass, "GET", "/api/v3/epics/#{epic_id}/stats", fn conn ->
@@ -136,12 +140,12 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, stats} = ShortcutApi.Epics.get_epic_stats("fake-token", epic_id)
+    {:ok, stats} = get_epic_stats.("fake-token", epic_id)
     assert stats["num_points"] == 10
     assert stats["num_stories"] == 5
   end
 
-  test "get_epic_state/2", %{bypass: bypass} do
+  test "get_epic_state/2", %{bypass: bypass, get_epic_state_2: get_epic_state} do
     state_id = 123
 
     Bypass.expect(bypass, "GET", "/api/v3/epic-workflow/states/#{state_id}", fn conn ->
@@ -158,7 +162,7 @@ defmodule ShortcutApi.EpicsTest do
       )
     end)
 
-    {:ok, state} = ShortcutApi.Epics.get_epic_state("fake-token", state_id)
+    {:ok, state} = get_epic_state.("fake-token", state_id)
     assert state["id"] == state_id
     assert state["name"] == "In Progress"
     assert state["type"] == "started"
