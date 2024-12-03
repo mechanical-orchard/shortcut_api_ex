@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    tags-ignore:
+      - 'v*'
 
 jobs:
   test:
@@ -42,3 +44,19 @@ jobs:
         run: mix test
       - name: Check formatting
         run: mix format --check-formatted
+
+  version:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Calculate semantic version
+        uses: bitshifted/git-auto-semver@v1.1.0
+        with:
+          main_branch: main
+          create_tag: true
+          tag_prefix: "v"

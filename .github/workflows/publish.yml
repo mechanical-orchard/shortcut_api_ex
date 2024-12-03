@@ -3,54 +3,24 @@ name: Publish
 on:
   workflow_dispatch:
     inputs:
-      branch:
-        description: "Branch to run the workflow on"
-        required: false
-        default: "main"
+      version:
+        description: "Version tag to publish (e.g. v1.2.3)"
+        required: true
+        type: string
 
 jobs:
-  version:
-    name: Calculate version
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.versioning.outputs.version-string }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: improve-auto-versioning
-          fetch-depth: 0
-
-      - name: Calculate semantic version
-        id: versioning
-        uses: bitshifted/git-auto-semver@v1.1.0
-        with:
-          main_branch: main
-          create_tag: true
-          tag_prefix: "v"
-
   publish:
-    name: Publish to Hex.pm
-    needs: version
+    name: Publish Release
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.branch }}
-
-      - name: Get calculated version
-        id: version
-        run: echo "version=${{ needs.version.outputs.version }}" >> $GITHUB_OUTPUT
 
       - name: Update version in mix.exs
         env:
-          RELEASE_VERSION: ${{ needs.version.outputs.version }}
-          BRANCH_NAME: ${{ github.event.inputs.branch }}
+          RELEASE_VERSION: ${{ inputs.version }}
         run: |
-          # Checkout the branch
-          git checkout $BRANCH_NAME
-
           # Configure Git user
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
@@ -59,19 +29,14 @@ jobs:
           sed -i 's/version: ".*"/version: "'${RELEASE_VERSION#v}'"/g' mix.exs
           git add mix.exs
           git commit -m "chore: Bump version to ${RELEASE_VERSION}"
-          git push origin $BRANCH_NAME
+          git push origin HEAD
 
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=${{ steps.version.outputs.version }}
-          git checkout ${{ github.ref }}
-          git tag $VERSION
-          git push origin $VERSION
-
-          gh release create $VERSION \
-            --title "Release $VERSION" \
+          gh release create ${{ inputs.version }} \
+            --title "Release ${{ inputs.version }}" \
             --generate-notes
 
       - name: Set up Elixir
@@ -89,5 +54,4 @@ jobs:
       - name: Publish to Hex.pm
         env:
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
-        # Remove the replace flag when proper versioning is in place
-        run: mix hex.publish --replace --yes
+        run: mix hex.publish --yes
