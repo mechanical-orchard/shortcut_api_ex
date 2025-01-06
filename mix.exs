@@ -40,7 +40,7 @@ defmodule ShortcutApiEx.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :telemetry]
     ]
   end
 
@@ -51,9 +51,11 @@ defmodule ShortcutApiEx.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:hammox, "~> 0.7", only: :test},
+      {:httpoison, "~> 2.0"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.5", only: :test},
-      {:req, "~> 0.5.0"}
+      {:req, "~> 0.5.0"},
+      {:open_api_spex, "~> 3.18"}
     ]
   end
 
