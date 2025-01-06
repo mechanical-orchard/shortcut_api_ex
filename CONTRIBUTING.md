@@ -17,4 +17,4 @@ It will:
 * Bump the version in the mix.exs file
 * Create a github release for that version
 
-Remember to update the README.md documentation with the latest version (manual, for now, due to technical dificulties getting this to auto update)
+Remember to update the README.md documentation with the latest version (manual, for now, due to technical difficulties getting this to auto update)

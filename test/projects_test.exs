@@ -3,7 +3,6 @@ defmodule ShortcutApi.ProjectsTest do
 
   setup do
     bypass = Bypass.open()
-    # Override the base URL for testing
     base_url = "http://localhost:#{bypass.port}/api/v3"
     Application.put_env(:shortcut_api, :base_url, base_url)
     {:ok, bypass: bypass}
