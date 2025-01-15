@@ -17,10 +17,14 @@ defmodule Mix.Tasks.GenerateHello do
     # Start Finch
     {:ok, _} = Finch.start_link(name: Req.Finch)
 
+    # Clean up existing generated code
+    File.rm_rf!("lib/generated")
+    File.mkdir_p!("lib/generated")
+
     # Default URL if no argument is provided
     url = List.first(args) || "https://developer.shortcut.com/api/rest/v3/shortcut.swagger.json"
 
-    Mix.shell().info("Downloading Swagger file from: #{url}")
+    Mix.shell().info("Downloading Swagger file from: #{url}") 
 
     with {:ok, %{status: 200, body: body}} <- Req.get(url),
          {:ok, spec} <- parse_spec(body),
@@ -50,10 +54,6 @@ defmodule Mix.Tasks.GenerateHello do
   end
 
   defp generate_client(spec) do
-    # Clean up existing generated models
-    File.rm_rf!("lib/generated")
-    File.mkdir_p!("lib/generated")
-
     # Generate structs from definitions
     definitions = Map.get(spec, "definitions", %{})
     Enum.each(definitions, fn {name, schema} ->
@@ -68,19 +68,39 @@ defmodule Mix.Tasks.GenerateHello do
   end
 
   defp generate_api_client(paths) do
-    content = """
+    # Generate the behavior module
+    behavior_content = """
+    defmodule Generated.ApiClientBehavior do
+      @moduledoc \"\"\"
+      Behavior specification for the generated API client
+      \"\"\"
+
+      @type token :: String.t()
+
+      #{Enum.map_join(paths, "\n\n", &generate_behavior_callbacks/1)}
+    end
+    """
+
+    # Generate the implementation module
+    impl_content = """
     defmodule Generated.ApiClient do
       @moduledoc \"\"\"
       Generated API client functions
       \"\"\"
 
       alias ShortcutApi.ApiHelpers
+      @behaviour Generated.ApiClientBehavior
 
       #{Enum.map_join(paths, "\n\n", &generate_endpoint_functions/1)}
     end
     """
 
-    File.write!("lib/generated/api_client.ex", content)
+    File.write!("lib/generated/api_client_behavior.ex", behavior_content)
+    File.write!("lib/generated/api_client.ex", impl_content)
+    
+    # Format the generated files
+    Mix.Task.run("format", ["lib/generated/api_client_behavior.ex"])
+    Mix.Task.run("format", ["lib/generated/api_client.ex"])
   end
 
   defp generate_endpoint_functions({path, methods}) do
@@ -184,9 +204,11 @@ defmodule Mix.Tasks.GenerateHello do
       |> Enum.map(&Macro.underscore/1)
       |> Enum.join("/")
 
-    dir = Path.dirname("lib/#{path}.ex")
+    file_path = "lib/#{path}.ex"
+    dir = Path.dirname(file_path)
     File.mkdir_p!(dir)
-    File.write!("lib/#{path}.ex", content)
+    File.write!(file_path, content)
+    Mix.Task.run("format", [file_path])
   end
 
   defp get_field_type(%{"type" => "string"}), do: "String.t()"
@@ -207,4 +229,33 @@ defmodule Mix.Tasks.GenerateHello do
   end
 
   defp get_field_type(_), do: "any()"
+
+  defp generate_behavior_callbacks({path, methods}) do
+    Enum.map_join(methods, "\n\n", fn {method, details} ->
+      function_name = get_function_name(method, path)
+      
+      args = ["token :: token()" | 
+        details
+        |> Map.get("parameters", [])
+        |> Enum.map(fn param -> 
+          # Convert parameter name from hyphenated to underscore
+          param_name = String.replace(param["name"], "-", "_")
+          type = case param["type"] do
+            "integer" -> "integer()"
+            "string" -> "String.t()"
+            "boolean" -> "boolean()"
+            "array" -> "list()"
+            "object" -> "map()"
+            _ -> "any()"
+          end
+          "#{param_name} :: #{type}"
+        end)
+      ]
+
+      """
+      @callback #{function_name}(#{Enum.join(args, ", ")}) ::
+        {:ok, map()} | {:error, any()}
+      """
+    end)
+  end
 end
